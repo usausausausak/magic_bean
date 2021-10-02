@@ -1,0 +1,53 @@
+From 7036c90b198bc6c83555e792978753a26b12f210 Mon Sep 17 00:00:00 2001
+From: usausausausak <>
+Date: Thu, 30 Sep 2021 19:59:03 +0800
+Subject: [PATCH 1/2] wasm fix
+
+---
+ Cargo.toml | 2 +-
+ src/lib.rs | 5 -----
+ 2 files changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/Cargo.toml b/Cargo.toml
+index b0fdaee..4d8dd2c 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -10,7 +10,7 @@ keywords = ["gamedev", "graphics", "bevy", "3d", "raycast"]
+ categories = ["game-engines", "rendering"]
+ 
+ [dependencies]
+-bevy = { git = "https://github.com/bevyengine/bevy", branch = "main", version = "0.5", default-features = false, features = ["render"] }
++bevy = { version = "0.5", default-features = false, features = ["render"] }
+ 
+ [features]
+ ex = ["bevy/bevy_wgpu", "bevy/bevy_winit", "bevy/bevy_gltf", "bevy/x11"]
+diff --git a/src/lib.rs b/src/lib.rs
+index cef1b40..9c4cc08 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -306,14 +306,10 @@ pub fn update_raycast<T: 'static + Send + Sync>(
+     for mut pick_source in pick_source_query.iter_mut() {
+         if let Some(ray) = pick_source.ray {
+             pick_source.intersections.clear();
+-            // Create spans for tracing
+-            let ray_cull = info_span!("ray culling");
+-            let raycast = info_span!("raycast");
+ 
+             // Check all entities to see if the source ray intersects the bounding sphere, use this
+             // to build a short list of entities that are in the path of the ray.
+             let culled_list: Vec<Entity> = {
+-                let _ray_cull_guard = ray_cull.enter();
+                 culling_query
+                     .iter()
+                     .map(|(visibility, bound_vol, transform, entity)| {
+@@ -349,7 +345,6 @@ pub fn update_raycast<T: 'static + Send + Sync>(
+                 .iter()
+                 .filter(|(_mesh_handle, _transform, entity)| culled_list.contains(&entity))
+                 .filter_map(|(mesh_handle, transform, entity)| {
+-                    let _raycast_guard = raycast.enter();
+                     // Use the mesh handle to get a reference to a mesh asset
+                     if let Some(mesh) = meshes.get(mesh_handle) {
+                         if mesh.primitive_topology() != PrimitiveTopology::TriangleList {
+-- 
+2.33.0
+

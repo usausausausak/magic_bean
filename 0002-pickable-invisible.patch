@@ -1,0 +1,35 @@
+From c072260bc3d43aca65e1f2920a0e16fb0d31eda1 Mon Sep 17 00:00:00 2001
+From: usausausausak <>
+Date: Sat, 2 Oct 2021 23:01:42 +0800
+Subject: [PATCH 2/2] pickable invisible
+
+---
+ src/lib.rs | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/src/lib.rs b/src/lib.rs
+index 9c4cc08..a453cf1 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -312,8 +312,7 @@ pub fn update_raycast<T: 'static + Send + Sync>(
+             let culled_list: Vec<Entity> = {
+                 culling_query
+                     .iter()
+-                    .map(|(visibility, bound_vol, transform, entity)| {
+-                        let visible = visibility.is_visible;
++                    .map(|(_visibility, bound_vol, transform, entity)| {
+                         let bound_hit = if let Some(bound_vol) = bound_vol {
+                             if let Some(sphere) = &bound_vol.sphere {
+                                 let scaled_radius: f32 =
+@@ -331,7 +330,7 @@ pub fn update_raycast<T: 'static + Send + Sync>(
+                         } else {
+                             true // This entity has no bounding volume
+                         };
+-                        if visible && bound_hit {
++                        if bound_hit {
+                             Some(entity)
+                         } else {
+                             None
+-- 
+2.33.0
+

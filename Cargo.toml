@@ -1,0 +1,37 @@
+[package]
+name = "magic_bean"
+version = "0.1.0"
+edition = "2018"
+resolver = "2"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+# Dependencies for all targets go here.
+[dependencies]
+wasm-bindgen = "0.2"
+bevy_mod_picking = "0.4.0"
+fastrand = "1.5.0"
+
+# Dependencies for native only.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+bevy = { version = "0.5", default-features = false, features = ["bevy_wgpu", "bevy_winit", "render", "x11", "bevy_gltf"] }
+
+# Dependencies for WASM only.
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+bevy = { version = "0.5", default-features = false, features = ["bevy_winit", "render", "bevy_gltf"] }
+bevy_webgl2 = "0.5"
+wee_alloc = "0.4"
+
+[patch.crates-io]
+bevy_mod_raycast = { path = "./bevy_mod_raycast" }
+winit = { git  = "https://github.com/TotalKrill/winit.git", rev = "11db2b670df18f695e407481c4924c1308d11fba", version = "0.24" }
+
+[features]
+public = []
+
+[profile.release]
+opt-level = 's'
+lto = "thin"
